@@ -1,0 +1,22 @@
+name: Push to Another Repository
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  push-to-destination:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source repo
+        uses: actions/checkout@v2
+
+      - name: Push to destination repo
+        run: |
+          git config --global user.email "nicolas.schneider@epitech.eu"
+          git config --global user.name "Nicolas Schneider"
+
+          git remote add destination https://x-access-token:${{ secrets.TOKEN }}@github.com/EpitechPromo2024/M-WEB-902-PAR-9-1-pwaproject-nicolas.schneider
+          git push destination main
