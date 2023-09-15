@@ -7,6 +7,7 @@ on:
 
 jobs:
   push-to-destination:
+    if: github.repository == 'SchneiderNicolas/PWA'
     runs-on: ubuntu-latest
 
     steps:
@@ -18,5 +19,5 @@ jobs:
           git config --global user.email "nicolas.schneider@epitech.eu"
           git config --global user.name "Nicolas Schneider"
 
-          git remote add destination https://x-access-token:${{ secrets.TOKEN }}@github.com/EpitechPromo2024/M-WEB-902-PAR-9-1-pwaproject-nicolas.schneider
+          git remote add destination https://x-access-token:${{ secrets.TOKEN }}@github.com/EpitechPromo2024/M-WEB-902-PAR-9-1-pwaproject-nicolas.schneider.git
           git push destination main
