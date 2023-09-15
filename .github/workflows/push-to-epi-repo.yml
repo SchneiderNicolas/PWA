@@ -1,3 +1,8 @@
+- name: Debug token length
+  run: echo "Token has length of ${#TOKEN}"
+  env:
+    TOKEN: ${{ secrets.TOKEN }}
+
 name: Push to Another Repository
 
 on:
