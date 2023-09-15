@@ -1,4 +1,20 @@
-- name: Debug token length
-  run: echo "Token has length of ${#TOKEN}"
-  env:
-    TOKEN: ${{ secrets.TOKEN }}
+name: Push to Another Repository
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  push-to-destination:
+    if: github.repository == 'SchneiderNicolas/PWA'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source repo
+        uses: actions/checkout@v2
+
+    - name: Debug token length
+      run: echo "Token has length of ${#TOKEN}"
+      env:
+        TOKEN: ${{ secrets.TOKEN }}
