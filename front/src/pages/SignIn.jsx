@@ -7,7 +7,7 @@ const SignIn = () => {
   const [userName, setUserName] = useState('');
   const [pass, setPass] = useState('');
   const [loginError, setLoginError] = useState(false);
-  const [cookies, setCookie] = useCookies(['authToken']);
+  const [, setCookie] = useCookies(['authToken']);
 
   const onSubmit = async () => {
     console.log(userName + pass);
