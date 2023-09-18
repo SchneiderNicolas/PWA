@@ -1,14 +1,18 @@
 FROM node:16
 
-WORKDIR /app
+
+WORKDIR /usr/src/app
 
 COPY package*.json ./
 RUN npm install
 
+COPY prisma ./prisma/
+RUN npx prisma generate
+
 COPY . .
 
-RUN npx prisma generate
+RUN npm run build
 
 EXPOSE 8080
 
-CMD ["npm", "start"]
+CMD ["node", "dist/server.js"]
