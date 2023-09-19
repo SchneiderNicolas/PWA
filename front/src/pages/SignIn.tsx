@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import Button from '../components/Button.tsx';
-import Input from '../components/Input.tsx';
+import Button from '../components/Button';
+import Input from '../components/Input';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import config from '../config/config';
@@ -69,7 +69,7 @@ const SignIn = () => {
         </Button>
         <p className="mt-1 text-sm text-center text-gray-400">
           Vous n&apos;avez pas de compte ?{' '}
-          <a href="/signUp" className="text-lime-400 underline">
+          <a href="/signup" className="text-violet-500 underline">
             Créez-en un ici
           </a>
           .

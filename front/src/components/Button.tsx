@@ -22,10 +22,10 @@ function Button({
   let buttonClassName = '';
   if (variant === 'text') {
     buttonClassName +=
-      'font-semibold text-gray-400 hover:underline hover:underline-offset-4 hover:text-lime-500';
+      'font-semibold text-gray-400 hover:underline hover:underline-offset-4 hover:text-violet-500';
   } else {
     buttonClassName +=
-      'text-white bg-lime-500 hover:bg-lime-600 focus:ring-2 focus:outline-none focus:ring-lime-400 font-medium rounded-lg text-sm px-4 py-2 text-center mr-3 md:mr-0';
+      'text-white bg-violet-500 hover:bg-violet-600 focus:ring-2 focus:outline-none focus:ring-violet-600 font-medium rounded-lg text-sm px-4 py-2 text-center mr-3 md:mr-0';
   }
   if (disabled) {
     buttonClassName =
