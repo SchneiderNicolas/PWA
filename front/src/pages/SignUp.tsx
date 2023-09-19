@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Button from '../components/Button.tsx';
-import Input from '../components/Input.tsx';
+import Button from '../components/Button';
+import Input from '../components/Input';
 import config from '../config/config';
 
 const SignUpPage = () => {
@@ -35,7 +35,7 @@ const SignUpPage = () => {
       setSignUpError(data.message);
       return;
     } else {
-      navigate('/signIn');
+      navigate('/signin');
     }
   };
 
@@ -88,7 +88,10 @@ const SignUpPage = () => {
         </Button>
         <p className="mt-1 text-sm text-center text-gray-400">
           Vous avez déjà un compte ?{' '}
-          <a href="/signin" className="text-lime-400 underline cursor-pointer">
+          <a
+            href="/signin"
+            className="text-violet-500 underline cursor-pointer"
+          >
             Connectez-vous ici
           </a>
           .
