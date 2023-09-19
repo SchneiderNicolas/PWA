@@ -4,13 +4,13 @@ import { useCookies } from 'react-cookie';
 
 const ProtectedRoute: React.FC = (): JSX.Element => {
   const navigate = useNavigate();
-  const [cookies] = useCookies(['authToken']);
+  const [cookies] = useCookies(['accessToken']);
   const [isAllowed, setIsAllowed] = useState(false);
   const [isLoading, setLoading] = useState(true);
 
   useEffect(() => {
     async function checkSubscription() {
-      if (cookies.authToken !== undefined) {
+      if (cookies.accessToken !== undefined) {
         setLoading(false);
         setIsAllowed(true);
       }

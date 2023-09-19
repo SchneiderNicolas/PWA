@@ -2,17 +2,38 @@ import React, { useState } from 'react';
 import Button from '../components/Button.tsx';
 import Input from '../components/Input.tsx';
 import { useCookies } from 'react-cookie';
+import { useNavigate } from 'react-router-dom';
+import config from '../config/config';
 
 const SignIn = () => {
-  const [userName, setUserName] = useState('');
+  const [email, setEmail] = useState('');
   const [pass, setPass] = useState('');
   const [loginError, setLoginError] = useState(false);
-  const [, setCookie] = useCookies(['authToken']);
+  const [, setCookie] = useCookies(['accessToken', 'userName']);
+  const navigate = useNavigate();
 
   const onSubmit = async () => {
-    console.log(userName + pass);
-    setLoginError(true);
-    setCookie('authToken', 'test', { path: '/' });
+    const response = await fetch(`${config.API_BASE_URL}/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: email,
+        password: pass,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      setLoginError(data.message);
+      return;
+    } else {
+      setCookie('accessToken', data.accessToken, { path: '/' });
+      setCookie('userName', data.name, { path: '/' });
+      navigate('/');
+    }
   };
 
   return (
@@ -24,7 +45,7 @@ const SignIn = () => {
         <Input
           placeholder="E-mail"
           onChange={(e) => {
-            setUserName(e.target.value);
+            setEmail(e.target.value);
           }}
           id="input_email"
         />
