@@ -54,7 +54,7 @@ function Input({
       <input
         value={inputValue}
         type={inputType}
-        className="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded appearance-none focus:outline-none ring-2 ring-gray-200 focus:ring-lime-400 focus:border-lime-400 peer"
+        className="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded appearance-none focus:outline-none ring-2 ring-gray-200 focus:ring-violet-500 focus:border-violet-500 peer"
         placeholder=" "
         onChange={handleInputChange}
         onFocus={onFocus}
@@ -90,7 +90,7 @@ function Input({
       )}
       <label
         htmlFor={id}
-        className={`cursor-text absolute text-sm text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] ${labelBgColor} px-2 peer-focus:px-2 peer-focus:text-lime-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1`}
+        className={`cursor-text absolute text-sm text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] ${labelBgColor} px-2 peer-focus:px-2 peer-focus:text-violet-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1`}
       >
         {placeholder}
       </label>
