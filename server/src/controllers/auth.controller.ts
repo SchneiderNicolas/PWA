@@ -59,7 +59,7 @@ export const registerUser = async (req: Request, res: Response) => {
     res.status(201).json(result);
   } catch (error) {
     const e = error as Error;
-    res.status(500).json({ message: "An error occurred", error: e.message });
+    res.status(500).json({ message: e.message, error: "An error occurred" });
   }
 };
 
@@ -96,6 +96,6 @@ export const loginUser = async (req: Request, res: Response) => {
     res.json({ ...userWithoutSensitiveInfo, accessToken });
   } catch (error) {
     const e = error as Error;
-    res.status(500).json({ message: "An error occurred", error: e.message });
+    res.status(500).json({ message: e.message, error: "An error occurred" });
   }
 };

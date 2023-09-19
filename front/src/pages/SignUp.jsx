@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Button from '../components/Button.tsx';
 import Input from '../components/Input.tsx';
+import config from '../config/config';
 
 const SignUpPage = () => {
   const [userName, setUserName] = useState('');
@@ -8,39 +10,33 @@ const SignUpPage = () => {
   const [email, setUserEmail] = useState('');
   const [confirmPass, setConfirmPass] = useState('');
   const [signUpError, setSignUpError] = useState('');
+  const navigate = useNavigate();
 
   const onSubmit = async () => {
-    if (pass.current !== confirmPass.current) {
-      setSignUpError('Les mots de passe ne correspondent pas.');
+    if (pass !== confirmPass) {
+      setSignUpError('Passwords do not match.');
       return;
     }
-
-    console.log(userName + email + pass + confirmPass);
-    setSignUpError(true);
-
-    /*
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/user`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: userName.current,
-          email: email.current,
-          password: pass.current,
-        }),
+    const response = await fetch(`${config.API_BASE_URL}/auth/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
-    );
+      body: JSON.stringify({
+        name: userName,
+        email: email,
+        password: pass,
+      }),
+    });
 
     const data = await response.json();
 
     if (!response.ok) {
       setSignUpError(data.message);
       return;
+    } else {
+      navigate('/signIn');
     }
-    */
   };
 
   return (
@@ -81,7 +77,7 @@ const SignUpPage = () => {
           id="input_confirm_password"
         />
         <p
-          className={`text-red-600 text-center text-sm -mt-2 ${
+          className={`text-red-600 text-center text-sm -mt-2 capitalize ${
             signUpError ? 'animate-shake' : 'invisible'
           }`}
         >
