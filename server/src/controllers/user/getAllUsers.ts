@@ -1,8 +1,6 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
-import { handleDatabaseOperation } from "../utils/handleDatabaseOperation";
-
-const prisma = new PrismaClient();
+import { handleDatabaseOperation } from "../../utils/handleDatabaseOperation";
+import { prisma } from "../../utils/prisma";
 
 export const getAllUsers = handleDatabaseOperation(
   async (req: Request, res: Response) => {
