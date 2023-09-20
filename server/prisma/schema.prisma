@@ -11,8 +11,29 @@ datasource db {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  email     String    @unique
-  name      String
-  password  String
+  id            Int          @id @default(autoincrement())
+  email         String       @unique
+  name          String
+  password      String
+  isRegistered  Boolean      @default(false)
+  inviteCode    String?      @unique
+  messages      Message[]
+  discussions   Discussion[] @relation("UserToDiscussion")
+}
+
+model Discussion {
+  id           Int          @id @default(autoincrement())
+  title        String
+  users        User[]       @relation("UserToDiscussion")
+  messages     Message[]
+}
+
+model Message {
+  id           Int        @id @default(autoincrement())
+  content      String
+  createdAt    DateTime   @default(now())
+  userId       Int
+  discussionId Int
+  user         User       @relation(fields: [userId], references: [id])
+  discussion   Discussion @relation(fields: [discussionId], references: [id])
 }
