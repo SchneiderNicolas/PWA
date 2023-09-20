@@ -3,6 +3,7 @@ import * as bcrypt from "bcrypt";
 import * as yup from "yup";
 import { prisma } from "../../utils/prisma";
 import { signJwtAccessToken } from "../../utils/jwt";
+import { handleDatabaseOperation } from "../../utils/handleDatabaseOperation";
 
 // ---------------------------
 // SCHEMA VALIDATIONS
@@ -23,39 +24,43 @@ const loginSchema = yup.object().shape({
  * @param {Request} req - Express request object
  * @param {Response} res - Express response object
  */
-export const loginUser = async (req: Request, res: Response) => {
-  try {
-    const body = req.body;
+export const loginUser = handleDatabaseOperation(
+  async (req: Request, res: Response) => {
+    try {
+      const body = req.body;
 
-    await loginSchema.validate(body);
+      await loginSchema.validate(body);
 
-    const user = await prisma.user.findFirst({
-      where: {
-        email: body.email,
-      },
-    });
+      const user = await prisma.user.findFirst({
+        where: {
+          email: body.email,
+        },
+      });
 
-    if (!user || !(await bcrypt.compare(body.password, user.password))) {
-      return res.status(401).json({ message: "Invalid username or password" });
+      if (!user || !(await bcrypt.compare(body.password, user.password))) {
+        return res
+          .status(401)
+          .json({ message: "Invalid username or password" });
+      }
+
+      const accessToken = signJwtAccessToken({
+        id: user.id,
+        email: user.email,
+        name: user.name,
+      });
+
+      // Extract only the desired properties to return in the response
+      const responsePayload = {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        accessToken: accessToken,
+      };
+
+      res.json(responsePayload);
+    } catch (error) {
+      const e = error as Error;
+      res.status(500).json({ message: e.message, error: "An error occurred" });
     }
-
-    const accessToken = signJwtAccessToken({
-      id: user.id,
-      email: user.email,
-      name: user.name,
-    });
-
-    // Extract only the desired properties to return in the response
-    const responsePayload = {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      accessToken: accessToken,
-    };
-
-    res.json(responsePayload);
-  } catch (error) {
-    const e = error as Error;
-    res.status(500).json({ message: e.message, error: "An error occurred" });
   }
-};
+);
