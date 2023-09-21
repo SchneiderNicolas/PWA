@@ -40,17 +40,17 @@ const SignIn = () => {
     <div className="flex flex-col justify-center items-center h-screen">
       <div className="px-12 py-12 shadow bg-white rounded-md flex flex-col gap-6">
         <h1 className="text-2xl font-bold text-gray-600 text-center mb-4">
-          Connectez-vous à votre compte
+          Sign in to your account
         </h1>
         <Input
-          placeholder="E-mail"
+          placeholder="Email"
           onChange={(e) => {
             setEmail(e.target.value);
           }}
           id="input_email"
         />
         <Input
-          placeholder="Mot de passe"
+          placeholder="Password"
           type="password"
           onChange={(e) => {
             setPass(e.target.value);
@@ -62,15 +62,15 @@ const SignIn = () => {
             loginError ? 'animate-shake' : 'invisible'
           }`}
         >
-          Identifiants incorrects. Veuillez réessayer.
+          Incorrect credentials. Please try again.
         </p>
         <Button type="button" className="-mt-2" onClick={onSubmit}>
-          Connexion
+          Login
         </Button>
         <p className="mt-1 text-sm text-center text-gray-400">
-          Vous n&apos;avez pas de compte ?{' '}
+          Don't have an account?{' '}
           <a href="/signup" className="text-violet-500 underline">
-            Créez-en un ici
+            Create one here
           </a>
           .
         </p>

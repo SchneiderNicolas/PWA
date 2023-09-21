@@ -26,6 +26,7 @@ export const authenticateJWT = (
   }
 
   req.userId = decodedPayload.id;
+  req.userName = decodedPayload.name;
 
   next();
 };

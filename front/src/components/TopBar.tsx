@@ -8,7 +8,6 @@ export type TopBarProps = {
 };
 
 export const TopBar = ({ toggle, isMobile }: TopBarProps) => {
-  // Function to handle the click event
   const handleNewDiscussionClick = () => {
     console.log('new discussion');
   };
