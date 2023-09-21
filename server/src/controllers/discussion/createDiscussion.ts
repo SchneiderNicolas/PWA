@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import * as bcrypt from "bcrypt";
 import crypto from "crypto";
 import { handleDatabaseOperation } from "../../utils/handleDatabaseOperation";
+import { sendInvitationEmail } from "../../services/emailService";
 
 // ---------------------------
 // CREATE DISCUSSION FUNCTION
@@ -64,6 +65,7 @@ export const createDiscussion = handleDatabaseOperation(
 
       // For each missing email, create a new user with isRegistered set to false and an invite code
       const newUsers = [];
+      const senderName = req.userName || "Someone";
       for (let email of missingEmails) {
         const newUser = await prisma.user.create({
           data: {
@@ -79,13 +81,25 @@ export const createDiscussion = handleDatabaseOperation(
         });
         newUsers.push(newUser);
 
-        // For now, log the new user, later send an email
-        console.log("Created new user:", newUser);
+        // Send an email invitation to the newly created user
+        if (newUser.inviteCode) {
+          // Check if inviteCode exists
+          await sendInvitationEmail(email, senderName, newUser.inviteCode);
+        } else {
+          // Handle the case where the inviteCode is not available
+          console.error("Invite code not found for user:", email);
+        }
       }
 
-      // For each unregistered user, print their info, later send an email
+      // For each unregistered user, send an invitation email
       for (let user of unregisteredUsers) {
-        console.log("Unregistered user:", user);
+        if (user.inviteCode) {
+          // Check if inviteCode exists
+          await sendInvitationEmail(user.email, senderName, user.inviteCode);
+        } else {
+          // Handle the case where the inviteCode is not available
+          console.error("Invite code not found for user:", user.email);
+        }
       }
 
       // Extract user IDs from the registered, unregistered, and new users
