@@ -7,6 +7,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Sidebar from './components/Sidebar';
 import Settings from './pages/Settings';
 import AcceptInvitationPage from './pages/AcceptInvitationPage';
+import NotFound from './pages/NotFound';
 
 const App = () => {
   return (
@@ -22,6 +23,7 @@ const App = () => {
               <Route index element={<Home />} />
               <Route path="settings" element={<Settings />} />
             </Route>
+            <Route path="/*" element={<NotFound />} />
           </Routes>
         </div>
       </div>
@@ -33,11 +35,11 @@ const ConditionalSidebar = () => {
   const location = useLocation();
   const path = location.pathname.toLowerCase();
 
-  if (path === '/signin' || path === '/signup' || path === '/register') {
-    return null;
+  if (path === '/' || path === '/settings') {
+    return <Sidebar />;
   }
 
-  return <Sidebar />;
+  return null;
 };
 
 export default App;
