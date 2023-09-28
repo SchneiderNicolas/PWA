@@ -106,7 +106,7 @@ const Sidebar = (props: SidebarType) => {
                   {cookies.userName}
                 </div>
                 <RxArrowLeft
-                  className="absolute right-0 mr-4 hover:bg-violet-50 rounded-md"
+                  className="absolute right-0 mr-4 hover:bg-violet-100 rounded-md"
                   onClick={toggle}
                   size={30}
                   color={'#8b5cf6'}
@@ -132,14 +132,6 @@ const Sidebar = (props: SidebarType) => {
               path="/settings"
               tooltipText="Settings"
             />
-            <SidebarButton
-              name="Disconnect"
-              icon={<RxExit size={24} color={'#8b5cf6'} />}
-              onClick={onClickDisconnect}
-              isMobile={isMobile}
-              path=""
-              tooltipText="Disconnect"
-            />
             <Tooltip
               position="right"
               tooltipText={isOnline ? 'Connected' : 'Offline'}
@@ -158,10 +150,17 @@ const Sidebar = (props: SidebarType) => {
                 )}
               </div>
             </Tooltip>
+            <SidebarButton
+              name="Sign Out"
+              icon={<RxExit size={24} color={'#8b5cf6'} />}
+              onClick={onClickDisconnect}
+              isMobile={isMobile}
+              path=""
+              tooltipText="Sign Out"
+            />
           </div>
         </div>
       </aside>
-
       <div className="min-h-screen md:px-7 p-0">{props.children}</div>
     </>
   );

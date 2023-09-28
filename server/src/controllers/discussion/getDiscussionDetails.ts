@@ -49,6 +49,7 @@ export const getDiscussionDetails = handleDatabaseOperation(
               user: {
                 select: {
                   name: true,
+                  id: true,
                 },
               },
             },
