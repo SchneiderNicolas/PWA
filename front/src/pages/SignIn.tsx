@@ -9,7 +9,7 @@ const SignIn = () => {
   const [email, setEmail] = useState('');
   const [pass, setPass] = useState('');
   const [loginError, setLoginError] = useState(false);
-  const [, setCookie] = useCookies(['accessToken', 'userName']);
+  const [, setCookie] = useCookies(['accessToken', 'userName', 'userId']);
   const navigate = useNavigate();
 
   const onSubmit = async () => {
@@ -32,6 +32,7 @@ const SignIn = () => {
     } else {
       setCookie('accessToken', data.accessToken, { path: '/' });
       setCookie('userName', data.name, { path: '/' });
+      setCookie('userId', data.id, { path: '/' });
       navigate('/');
     }
   };

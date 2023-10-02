@@ -5,12 +5,13 @@ export const useCleanCookiesAndDisconnect = () => {
   const [cookie, setCookie, removeCookie] = useCookies([
     'accessToken',
     'userName',
+    'userId',
   ]);
 
   const cleanCookiesAndDisconnect = () => {
-    console.log('disconnect');
     removeCookie('accessToken', { path: '/' });
     removeCookie('userName', { path: '/' });
+    removeCookie('userId', { path: '/' });
   };
 
   return cleanCookiesAndDisconnect;
