@@ -31,7 +31,8 @@ const Discussion = () => {
     mutate,
   } = useSWR<DiscussionType>(
     `${config.API_BASE_URL}/discussions/${discussionId}`,
-    (url) => fetcher(url, cookies.accessToken),
+    (url: string) =>
+      fetcher(url, cookies.accessToken) as Promise<DiscussionType>,
   );
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
 

@@ -25,7 +25,7 @@ const UserSearch = ({ onSelect, selectedUsers }: UserSearchProps) => {
 
   const { data: users } = useSWR<User[]>(
     searchTerm ? `${config.API_BASE_URL}/users?term=${searchTerm}` : null,
-    (url) => fetcher(url, cookies.accessToken),
+    (url: string) => fetcher(url, cookies.accessToken) as Promise<User[]>,
   );
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
