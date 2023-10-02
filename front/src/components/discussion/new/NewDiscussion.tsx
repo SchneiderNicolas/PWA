@@ -4,7 +4,6 @@ import { User } from '../../../types/discussionTypes';
 import { useCookies } from 'react-cookie';
 import NewDiscussionTopBar from './NewDiscussionTopBar';
 import { useDiscussionContext } from '../../../contexts/DiscussionContext';
-import { mutate } from 'swr';
 
 const NewDiscussion = () => {
   const [messageInput, setMessageInput] = useState('');
@@ -14,7 +13,7 @@ const NewDiscussion = () => {
   const [title, setTitle] = useState('New Discussion');
   const [cookies] = useCookies(['accessToken']);
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
-  const { showDiscussion } = useDiscussionContext();
+  const { showDiscussion, toggleForceUpdate } = useDiscussionContext();
 
   const handleTitleChange = (newTitle: string) => {
     setTitle(newTitle);
@@ -50,9 +49,8 @@ const NewDiscussion = () => {
         return response.json();
       })
       .then((data) => {
-        console.log(data);
         showDiscussion(data.id);
-        mutate(`${config.API_BASE_URL}/discussions`);
+        toggleForceUpdate();
       })
       .catch((error) => console.error('Error:', error));
   };
