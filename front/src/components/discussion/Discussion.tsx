@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import useSWR from 'swr';
-import config from '../../config/config.dev';
+import config from '../../config/config';
 import fetcher from '../../utils/fetcher';
 import { useCookies } from 'react-cookie';
 import { Discussion as DiscussionType } from '../../types/discussionTypes';
