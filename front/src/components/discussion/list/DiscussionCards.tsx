@@ -1,7 +1,7 @@
 import React from 'react';
 import useSWR from 'swr';
 import { useCookies } from 'react-cookie';
-import config from '../../../config/config.dev';
+import config from '../../../config/config';
 import fetcher from '../../../utils/fetcher';
 import { Discussion } from '../../../types/discussionTypes';
 import { useNavigate } from 'react-router-dom';
@@ -11,10 +11,11 @@ const DiscussionCards = () => {
   const [cookies] = useCookies(['accessToken']);
   const navigate = useNavigate();
   const { showDiscussion, viewState } = useDiscussionContext();
+  const { forceUpdate } = useDiscussionContext();
 
   const { data: discussions, error } = useSWR<Discussion[]>(
-    `${config.API_BASE_URL}/discussions`,
-    (url) => fetcher(url, cookies.accessToken),
+    [`${config.API_BASE_URL}/discussions`, forceUpdate], // Depend on forceUpdate
+    ([url]) => fetcher(url, cookies.accessToken), // destructuring the array
   );
 
   if (error) return <div>Error loading discussions.</div>;

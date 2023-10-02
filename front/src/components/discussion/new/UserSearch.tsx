@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import useSWR from 'swr';
-import config from '../../../config/config.dev';
+import config from '../../../config/config';
 import fetcher from '../../../utils/fetcher';
 import { useCookies } from 'react-cookie';
 import UserItem from './UserItem';

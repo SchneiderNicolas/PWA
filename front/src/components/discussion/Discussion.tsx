@@ -17,7 +17,7 @@ const Discussion = () => {
   const { discussionId: routeDiscussionId } = useParams<{
     discussionId: string;
   }>();
-  const { viewState } = useDiscussionContext();
+  const { viewState, toggleForceUpdate } = useDiscussionContext();
   const discussionId = routeDiscussionId || viewState.discussionId;
 
   useEffect(() => {
@@ -83,6 +83,7 @@ const Discussion = () => {
     if (response.ok) {
       setMessageInput('');
       mutate();
+      toggleForceUpdate();
     } else {
       console.error('Failed to send message');
     }

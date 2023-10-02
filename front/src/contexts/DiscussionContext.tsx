@@ -16,6 +16,8 @@ interface IDiscussionContext {
   viewState: ViewState;
   showDiscussion: (id: number) => void;
   showNewDiscussion: () => void;
+  forceUpdate: boolean;
+  toggleForceUpdate: () => void;
 }
 
 const DiscussionContext = createContext<IDiscussionContext | undefined>(
@@ -38,6 +40,12 @@ interface DiscussionProviderProps {
 
 export const DiscussionProvider = ({ children }: DiscussionProviderProps) => {
   const location = useLocation();
+
+  const [forceUpdate, setForceUpdate] = useState<boolean>(false);
+
+  const toggleForceUpdate = useCallback(() => {
+    setForceUpdate((prev) => !prev);
+  }, []);
 
   const initializeViewState = (): ViewState => {
     const path = location.pathname.toLowerCase();
@@ -68,7 +76,13 @@ export const DiscussionProvider = ({ children }: DiscussionProviderProps) => {
 
   return (
     <DiscussionContext.Provider
-      value={{ viewState, showDiscussion, showNewDiscussion }}
+      value={{
+        viewState,
+        showDiscussion,
+        showNewDiscussion,
+        forceUpdate,
+        toggleForceUpdate,
+      }}
     >
       {children}
     </DiscussionContext.Provider>

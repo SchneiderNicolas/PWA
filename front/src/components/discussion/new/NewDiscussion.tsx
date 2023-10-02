@@ -1,11 +1,61 @@
 import React, { useEffect, useRef, useState } from 'react';
+import config from '../../../config/config';
+import { User } from '../../../types/discussionTypes';
+import { useCookies } from 'react-cookie';
 import NewDiscussionTopBar from './NewDiscussionTopBar';
+import { useDiscussionContext } from '../../../contexts/DiscussionContext';
+import { mutate } from 'swr';
 
 const NewDiscussion = () => {
   const [messageInput, setMessageInput] = useState('');
   const topBarRef = useRef<HTMLDivElement | null>(null);
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const [topBarHeight, setTopBarHeight] = useState(0);
+  const [title, setTitle] = useState('New Discussion');
+  const [cookies] = useCookies(['accessToken']);
+  const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
+  const { showDiscussion } = useDiscussionContext();
+
+  const handleTitleChange = (newTitle: string) => {
+    setTitle(newTitle);
+  };
+
+  const handleUserSelect = (user: User) => {
+    setSelectedUsers((prev) => [...prev, user]);
+  };
+
+  const handleUserRemove = (userEmail: string) => {
+    setSelectedUsers((prev) => prev.filter((user) => user.email !== userEmail));
+  };
+
+  const handleNewDiscussion = () => {
+    const payload = {
+      title,
+      emails: selectedUsers.map((user) => user.email),
+      message: messageInput,
+    };
+
+    fetch(`${config.API_BASE_URL}/discussions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${cookies.accessToken}`,
+      },
+      body: JSON.stringify(payload),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok' + response.statusText);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data);
+        showDiscussion(data.id);
+        mutate(`${config.API_BASE_URL}/discussions`);
+      })
+      .catch((error) => console.error('Error:', error));
+  };
 
   useEffect(() => {
     if (topBarRef.current) {
@@ -19,14 +69,16 @@ const NewDiscussion = () => {
     }
   }, []);
 
-  const handleNewDiscussion = () => {
-    console.log(messageInput);
-  };
-
   return (
     <div className="flex flex-col h-full">
       <div ref={topBarRef}>
-        <NewDiscussionTopBar initialTitle="New Discussion" />
+        <NewDiscussionTopBar
+          title={title}
+          selectedUsers={selectedUsers}
+          onTitleChange={handleTitleChange}
+          onUserSelect={handleUserSelect}
+          onUserRemove={handleUserRemove}
+        />
       </div>
       <div
         className="flex-grow p-2 overflow-y-auto"

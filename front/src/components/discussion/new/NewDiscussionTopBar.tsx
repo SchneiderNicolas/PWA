@@ -7,23 +7,23 @@ import Tooltip from '../../Tooltip';
 import { FiEdit2 } from 'react-icons/fi';
 
 type NewDiscussionTopBarProps = {
-  initialTitle: string;
+  title: string;
+  selectedUsers: User[];
+  onTitleChange: (title: string) => void;
+  onUserSelect: (user: User) => void;
+  onUserRemove: (userEmail: string) => void;
 };
 
-const NewDiscussionTopBar = ({ initialTitle }: NewDiscussionTopBarProps) => {
-  const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
+const NewDiscussionTopBar = ({
+  title,
+  selectedUsers,
+  onTitleChange,
+  onUserSelect,
+  onUserRemove,
+}: NewDiscussionTopBarProps) => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
-  const [title, setTitle] = useState(initialTitle);
   const isMobile = useResponsive();
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const handleUserSelect = (user: User) => {
-    setSelectedUsers((prev) => [...prev, user]);
-  };
-
-  const handleUserRemove = (userEmail: string) => {
-    setSelectedUsers((prev) => prev.filter((user) => user.email !== userEmail));
-  };
 
   const handleTitleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -43,7 +43,7 @@ const NewDiscussionTopBar = ({ initialTitle }: NewDiscussionTopBarProps) => {
             <input
               ref={inputRef}
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e) => onTitleChange(e.target.value)}
               onKeyPress={handleTitleKeyPress}
               onBlur={() => setIsEditingTitle(false)}
               autoFocus
@@ -69,16 +69,13 @@ const NewDiscussionTopBar = ({ initialTitle }: NewDiscussionTopBarProps) => {
           )}
         </div>
         <div className="w-full">
-          <UserSearch
-            onSelect={handleUserSelect}
-            selectedUsers={selectedUsers}
-          />
+          <UserSearch onSelect={onUserSelect} selectedUsers={selectedUsers} />
           <div className="flex flex-wrap space-x-2 mt-2">
             {selectedUsers.map((user) => (
               <SelectedUser
                 key={user.email}
                 user={user}
-                onRemove={handleUserRemove}
+                onRemove={onUserRemove}
               />
             ))}
           </div>
