@@ -14,8 +14,8 @@ const DiscussionCards = () => {
   const { forceUpdate } = useDiscussionContext();
 
   const { data: discussions, error } = useSWR<Discussion[]>(
-    [`${config.API_BASE_URL}/discussions`, forceUpdate], // Depend on forceUpdate
-    ([url]) => fetcher(url, cookies.accessToken), // destructuring the array
+    [`${config.API_BASE_URL}/discussions`, forceUpdate],
+    ([url]) => fetcher(url, cookies.accessToken),
   );
 
   if (error) return <div>Error loading discussions.</div>;
