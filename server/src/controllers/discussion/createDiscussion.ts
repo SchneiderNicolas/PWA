@@ -38,7 +38,20 @@ export const createDiscussion = handleDatabaseOperation(
     ) {
       return res.status(400).json({ error: "Invalid or missing emails." });
     }
-    const { title, emails }: { title: string; emails: string[] } = req.body;
+
+    if (
+      !req.body.message ||
+      typeof req.body.message !== "string" ||
+      !req.body.message.trim()
+    ) {
+      return res.status(400).json({ error: "Invalid or missing message." });
+    }
+
+    const {
+      title,
+      emails,
+      message,
+    }: { title: string; emails: string[]; message: string } = req.body;
 
     try {
       // Find all users by their emails
@@ -123,6 +136,20 @@ export const createDiscussion = handleDatabaseOperation(
           },
         },
       });
+
+      // Create a new message and connect it to the discussion and the user who is sending the message
+      if (req.userId) {
+        await prisma.message.create({
+          data: {
+            content: message,
+            userId: req.userId,
+            discussionId: newDiscussion.id,
+          },
+        });
+      } else {
+        // handle the case where the user ID of the sender is not available
+        console.error("User ID not found for the sender");
+      }
 
       res.status(201).json(newDiscussion);
     } catch (error) {

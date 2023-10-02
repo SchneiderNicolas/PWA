@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 type TooltipProps = {
   tooltipText: string;
   children: React.ReactNode;
-  position?: 'top' | 'right' | 'bottom' | 'left';
+  position?: 'top' | 'right' | 'right+' | 'bottom' | 'left';
   isMobile?: boolean;
 };
 
@@ -48,6 +48,12 @@ const Tooltip = ({
           top: `${coords.top}px`,
           left: `${coords.left}px`,
           transform: 'translateX(50%)',
+        };
+      case 'right+':
+        return {
+          top: `${coords.top}px`,
+          left: `${coords.left}px`,
+          transform: 'translateX(75%)',
         };
       case 'bottom':
         return {
