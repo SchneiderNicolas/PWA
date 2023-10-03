@@ -18,6 +18,7 @@ interface IDiscussionContext {
   showNewDiscussion: () => void;
   forceUpdate: boolean;
   toggleForceUpdate: () => void;
+  resetViewState: () => void;
 }
 
 const DiscussionContext = createContext<IDiscussionContext | undefined>(
@@ -74,6 +75,10 @@ export const DiscussionProvider = ({ children }: DiscussionProviderProps) => {
     setViewState({ type: 'NEW_DISCUSSION', discussionId: null });
   }, []);
 
+  const resetViewState = useCallback(() => {
+    setViewState({ type: 'NEW_DISCUSSION', discussionId: null });
+  }, []);
+
   return (
     <DiscussionContext.Provider
       value={{
@@ -82,6 +87,7 @@ export const DiscussionProvider = ({ children }: DiscussionProviderProps) => {
         showNewDiscussion,
         forceUpdate,
         toggleForceUpdate,
+        resetViewState,
       }}
     >
       {children}
