@@ -4,6 +4,7 @@ import { User } from '../../../types/discussionTypes';
 import { useCookies } from 'react-cookie';
 import NewDiscussionTopBar from './NewDiscussionTopBar';
 import { useDiscussionContext } from '../../../contexts/DiscussionContext';
+import { useNavigate } from 'react-router-dom';
 
 const NewDiscussion = () => {
   const [messageInput, setMessageInput] = useState('');
@@ -14,6 +15,7 @@ const NewDiscussion = () => {
   const [cookies] = useCookies(['accessToken']);
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
   const { showDiscussion, toggleForceUpdate } = useDiscussionContext();
+  const navigate = useNavigate();
 
   const handleTitleChange = (newTitle: string) => {
     setTitle(newTitle);
@@ -51,6 +53,7 @@ const NewDiscussion = () => {
       .then((data) => {
         showDiscussion(data.id);
         toggleForceUpdate();
+        navigate(`/discussion/${data.id}`);
       })
       .catch((error) => console.error('Error:', error));
   };

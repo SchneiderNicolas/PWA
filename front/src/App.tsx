@@ -9,8 +9,12 @@ import Settings from './pages/Settings';
 import AcceptInvitationPage from './pages/AcceptInvitationPage';
 import NotFound from './pages/NotFound';
 import { DiscussionProvider } from './contexts/DiscussionContext';
+import { useResponsive } from './hooks/useResponsive';
+import Discussion from './components/discussion/Discussion';
+import NewDiscussion from './components/discussion/new/NewDiscussion';
 
 const App = () => {
+  const { isMobile } = useResponsive();
   return (
     <BrowserRouter>
       <DiscussionProvider>
@@ -23,8 +27,14 @@ const App = () => {
               <Route path="/register" element={<AcceptInvitationPage />} />
               <Route path="/" element={<ProtectedRoute />}>
                 <Route index element={<Home />} />
-                <Route path="/discussion/:discussionId" element={<Home />} />
-                <Route path="/new" element={<Home />} />
+                <Route
+                  path="/discussion/:discussionId"
+                  element={isMobile ? <Discussion /> : <Home />}
+                />
+                <Route
+                  path="/new"
+                  element={isMobile ? <NewDiscussion /> : <Home />}
+                />
 
                 <Route path="settings" element={<Settings />} />
               </Route>

@@ -49,6 +49,7 @@ const UserSearch = ({ onSelect, selectedUsers }: UserSearchProps) => {
         To:
       </label>
       <input
+        autoComplete="off"
         ref={inputRef}
         id="userSearch"
         type="text"
@@ -60,7 +61,7 @@ const UserSearch = ({ onSelect, selectedUsers }: UserSearchProps) => {
         autoFocus
       />
       {filteredUsers && filteredUsers.length > 0 && (
-        <div className="absolute top-full mt-2 w-96 bg-white border border-gray-300 p-2 rounded-xl shadow-md z-50 overflow-hidden">
+        <div className="absolute top-full mt-2 w-80 sm:w-96 bg-white border border-gray-300 p-2 rounded-xl shadow-md z-50 overflow-hidden">
           {filteredUsers.map((user) => (
             <div
               key={user.email}
