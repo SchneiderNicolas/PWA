@@ -5,7 +5,6 @@ import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import ProtectedRoute from './components/ProtectedRoute';
 import Sidebar from './components/Sidebar';
-import Settings from './pages/Settings';
 import AcceptInvitationPage from './pages/AcceptInvitationPage';
 import NotFound from './pages/NotFound';
 import { DiscussionProvider } from './contexts/DiscussionContext';
@@ -35,8 +34,6 @@ const App = () => {
                   path="/new"
                   element={isMobile ? <NewDiscussion /> : <Home />}
                 />
-
-                <Route path="settings" element={<Settings />} />
               </Route>
               <Route path="/*" element={<NotFound />} />
             </Routes>
@@ -54,8 +51,7 @@ const ConditionalSidebar = () => {
   if (
     path === '/' ||
     path.startsWith('/discussion/') ||
-    path.startsWith('/new') ||
-    path === '/settings'
+    path.startsWith('/new')
   ) {
     return <Sidebar />;
   }

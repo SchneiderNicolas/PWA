@@ -71,25 +71,11 @@ function registerValidSW(swUrl: string, config?: Config) {
         installingWorker.onstatechange = () => {
           if (installingWorker.state === 'installed') {
             if (navigator.serviceWorker.controller) {
-              // At this point, the updated precached content has been fetched,
-              // but the previous service worker will still serve the older
-              // content until all client tabs are closed.
-              console.log(
-                'New content is available and will be used when all ' +
-                  'tabs for this page are closed. See https://cra.link/PWA.',
-              );
-
-              // Execute callback
-              if (config && config.onUpdate) {
-                config.onUpdate(registration);
-              }
+              // At this point, the updated content has been fetched,
+              // but the previous service worker will still serve the older content until all tabs are closed.
+              notifyUserOfUpdate(registration);
             } else {
-              // At this point, everything has been precached.
-              // It's the perfect time to display a
-              // "Content is cached for offline use." message.
               console.log('Content is cached for offline use.');
-
-              // Execute callback
               if (config && config.onSuccess) {
                 config.onSuccess(registration);
               }
@@ -143,4 +129,28 @@ export function unregister() {
         console.error(error.message);
       });
   }
+}
+
+function notifyUserOfUpdate(registration: ServiceWorkerRegistration) {
+  showUpdateNotification()
+    .then((userAccepted) => {
+      if (userAccepted) {
+        updateApp(registration);
+      }
+    })
+    .catch((error) => {
+      console.error('Error showing update notification', error);
+    });
+}
+
+function updateApp(registration: ServiceWorkerRegistration) {
+  registration.waiting?.postMessage({ type: 'SKIP_WAITING' });
+  window.location.reload();
+}
+
+async function showUpdateNotification(): Promise<boolean> {
+  return new Promise((resolve) => {
+    const userAccepted = window.confirm('New version available. Update now?');
+    resolve(userAccepted);
+  });
 }

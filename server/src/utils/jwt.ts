@@ -1,7 +1,7 @@
 import jwt, { JwtPayload, SignOptions } from "jsonwebtoken";
 
 const DEFAULT_SIGN_OPTIONS: SignOptions = {
-  expiresIn: "7d",
+  expiresIn: "1d",
 };
 
 if (!process.env.SECRET_KEY) {

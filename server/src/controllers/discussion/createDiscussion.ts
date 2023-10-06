@@ -5,6 +5,7 @@ import * as bcrypt from "bcrypt";
 import crypto from "crypto";
 import { handleDatabaseOperation } from "../../utils/handleDatabaseOperation";
 import { sendInvitationEmail } from "../../services/emailService";
+import { sendNotification } from "../../services/notificationService";
 
 // ---------------------------
 // CREATE DISCUSSION FUNCTION
@@ -150,6 +151,25 @@ export const createDiscussion = handleDatabaseOperation(
         // handle the case where the user ID of the sender is not available
         console.error("User ID not found for the sender");
       }
+
+
+      // Prepare notification content
+      const notificationTitle = "New Discussion Created!";
+      const notificationMessage = `A new discussion titled "${title}" has been created! Join the conversation now.`;
+
+      const baseURL =
+        process.env.NODE_ENV === "production"
+          ? "https://pwa.nicolas-schneider.fr"
+          : "http://localhost:3000";
+      const targetURL = `${baseURL}/discussion/${newDiscussion.id}`;
+
+      // Send notification to selected users
+      await sendNotification(
+        userIds,
+        notificationTitle,
+        notificationMessage,
+        targetURL
+      );
 
       res.status(201).json(newDiscussion);
     } catch (error) {

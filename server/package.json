@@ -23,6 +23,7 @@
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^6.9.5",
     "uuid": "^9.0.1",
+    "web-push": "^3.6.6",
     "yup": "^1.2.0"
   },
   "devDependencies": {
@@ -33,6 +34,7 @@
     "@types/node": "^20.6.2",
     "@types/nodemailer": "^6.4.10",
     "@types/uuid": "^9.0.4",
+    "@types/web-push": "^3.6.1",
     "nodemon": "^3.0.1",
     "prisma": "^5.3.1",
     "ts-node": "^10.9.1",

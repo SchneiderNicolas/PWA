@@ -6,12 +6,14 @@ export const useCleanCookiesAndDisconnect = () => {
     'accessToken',
     'userName',
     'userId',
+    'email',
   ]);
 
   const cleanCookiesAndDisconnect = () => {
     removeCookie('accessToken', { path: '/' });
     removeCookie('userName', { path: '/' });
     removeCookie('userId', { path: '/' });
+    removeCookie('email', { path: '/' });
   };
 
   return cleanCookiesAndDisconnect;

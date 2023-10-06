@@ -79,3 +79,66 @@ self.addEventListener('message', (event) => {
 });
 
 // Any other custom service worker logic can go here.
+
+self.addEventListener('push', function (event) {
+  if (!event.data) {
+    console.error('Push event but no data');
+    return;
+  }
+
+  const data = event.data.json();
+
+  if (!data.title || !data.body) {
+    console.error('Push event but no title or body data');
+    return;
+  }
+
+  const options = {
+    body: data.body,
+    icon: data.icon || 'images/example.png',
+    badge: 'images/badge.png',
+    data: data.data || {},
+  };
+
+  event.waitUntil(self.registration.showNotification(data.title, options));
+});
+
+self.addEventListener('notificationclick', function (event) {
+  event.notification.close();
+
+  const urlToNavigate = event.notification.data.url;
+
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window' }).then((windowClients) => {
+      for (let i = 0; i < windowClients.length; i++) {
+        const client = windowClients[i];
+        const clientBaseUrl = new URL(client.url).origin;
+        const notificationBaseUrl = new URL(urlToNavigate).origin;
+
+        if (client.url === urlToNavigate && 'focus' in client) {
+          return client.focus();
+        } else if (clientBaseUrl === notificationBaseUrl) {
+          return client.navigate(urlToNavigate).then((navigatedClient) => {
+            if (navigatedClient) {
+              return navigatedClient.focus();
+            }
+          });
+        }
+      }
+
+      if (self.clients.openWindow) {
+        return self.clients.openWindow(urlToNavigate);
+      }
+    }),
+  );
+});
+
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
+self.addEventListener('install', function (event) {
+  self.skipWaiting();
+});
