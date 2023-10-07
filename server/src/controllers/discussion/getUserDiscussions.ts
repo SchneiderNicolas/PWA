@@ -19,6 +19,10 @@ export const getUserDiscussions = handleDatabaseOperation(
     try {
       const userId = req.userId;
 
+      if (userId === undefined || typeof userId !== "number") {
+        return res.status(401).json({ error: "User is not authenticated." });
+      }
+
       const discussions = await prisma.discussion.findMany({
         where: {
           users: {
@@ -52,13 +56,21 @@ export const getUserDiscussions = handleDatabaseOperation(
         },
       });
 
-      const discussionsForResponse = discussions.map((discussion) => {
+      const sortedDiscussions = discussions.sort((a, b) => {
+        const aLatestMessage = a.messages[0]?.createdAt;
+        const bLatestMessage = b.messages[0]?.createdAt;
+        if (!aLatestMessage || !bLatestMessage) return 0;
+        return bLatestMessage.getTime() - aLatestMessage.getTime();
+      });
+
+      const discussionsForResponse = sortedDiscussions.map((discussion) => {
         const formattedCreatedAt = discussion.messages[0]
           ? formatDateForDisplay(discussion.messages[0].createdAt)
           : null;
-
+        const isNew = !discussion.seenBy.includes(userId);
         return {
           ...discussion,
+          isNew,
           messages: discussion.messages.map((message) => ({
             ...message,
             formattedCreatedAt,

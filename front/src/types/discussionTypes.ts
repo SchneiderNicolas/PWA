@@ -16,4 +16,5 @@ export type Discussion = {
   title: string;
   users: User[];
   messages: Message[];
+  isNew: boolean;
 };

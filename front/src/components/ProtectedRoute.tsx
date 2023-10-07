@@ -15,26 +15,6 @@ const ProtectedRoute: React.FC = (): JSX.Element => {
         setIsAllowed(true);
       }
       setLoading(false);
-      /*
-      const config = {
-        headers: { Authorization: `Bearer ${cookies.Bestofy_Token}` },
-      };
-      return await axios
-        .get(URL_USER_SUBSCRIPTION, config)
-        .then(function (response) {
-          setIsAllowed(response.data.subscription.active);
-          localStorage.setItem(
-            "Bestofy_Subscribed",
-            response.data.subscription.active,
-          );
-          setLoading(false);
-        })
-        .catch(function (error) {
-          error.code === "ERR_BAD_REQUEST"
-            ? setLoading(false)
-            : navigate("/error");
-        });
-            */
     }
     checkSubscription();
   }, [navigate, cookies]);

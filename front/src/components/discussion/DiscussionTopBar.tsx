@@ -22,7 +22,7 @@ const DiscussionTopBar = ({ title, users }: DiscussionTopBarProps) => {
   };
 
   return (
-    <div className={'z-40 sticky top-0 bg-white border-b border-gray-200'}>
+    <div className={'z-30 sticky top-0 bg-white border-b border-gray-200'}>
       {isMobile && (
         <button
           onClick={handleBackClick}

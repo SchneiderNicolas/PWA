@@ -8,6 +8,9 @@ import { useCleanCookiesAndDisconnect } from '../hooks/useCleanCookiesAndDisconn
 import { useCookies } from 'react-cookie';
 import { TopBar } from './TopBar';
 import Tooltip from './Tooltip';
+import { useModal } from '../hooks/useModal';
+import Modal from './Modal';
+import ModalSettings from './settings/ModalSettings';
 
 export type SidebarButtonProps = {
   name: string;
@@ -59,13 +62,10 @@ const Sidebar = (props: SidebarType) => {
   const [cookies] = useCookies(['userName']);
   const cleanCookiesAndDisconnect = useCleanCookiesAndDisconnect();
   const navigate = useNavigate();
+  const { isModalOpen, toggleModal } = useModal();
 
   const onClickHome = () => {
     navigate('/');
-  };
-
-  const onClickSettings = () => {
-    navigate('/settings');
   };
 
   const onClickDisconnect = () => {
@@ -89,11 +89,14 @@ const Sidebar = (props: SidebarType) => {
 
   return (
     <>
+      <Modal isOpen={isModalOpen} toggle={toggleModal}>
+        <ModalSettings />
+      </Modal>
       <TopBar toggle={toggle} isMobile={isMobile} />
 
       <aside
         id="default-sidebar"
-        className={`fixed top-0 left-0 z-50 h-screen transition-transform md:translate-x-0 ${
+        className={`fixed top-0 left-0 z-40 h-screen transition-transform md:translate-x-0 ${
           !isOpen ? '-translate-x-full' : ''
         } ${isMobile ? 'w-60' : 'border-r border-gray-200'}`}
         aria-label="Sidebar"
@@ -127,7 +130,7 @@ const Sidebar = (props: SidebarType) => {
             <SidebarButton
               name="Settings"
               icon={<RxGear size={24} color={'#8b5cf6'} />}
-              onClick={onClickSettings}
+              onClick={toggleModal}
               isMobile={isMobile}
               path="/settings"
               tooltipText="Settings"

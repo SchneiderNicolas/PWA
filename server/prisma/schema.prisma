@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -19,6 +16,17 @@ model User {
   inviteCode    String?      @unique
   messages      Message[]
   discussions   Discussion[] @relation("UserToDiscussion")
+  subscription  Subscription?
+}
+
+model Subscription {
+  id        Int      @id @default(autoincrement())
+  endpoint  String
+  keys      Json
+  userId    Int      @unique
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Discussion {
@@ -26,6 +34,7 @@ model Discussion {
   title        String
   users        User[]       @relation("UserToDiscussion")
   messages     Message[]
+  seenBy       Int[]        @default([])
 }
 
 model Message {

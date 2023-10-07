@@ -16,7 +16,7 @@ export const TopBar = ({ toggle, isMobile }: TopBarProps) => {
 
   return (
     <div
-      className={`fixed top-0 left-0 right-0 z-40 bg-white border-gray-200 ${
+      className={`fixed top-0 left-0 right-0 z-30 bg-white border-gray-200 ${
         !isMobile ? 'ml-14 border-l border-gray-200 w-96 border-r' : ''
       }`}
     >
