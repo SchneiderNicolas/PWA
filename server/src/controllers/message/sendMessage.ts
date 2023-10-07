@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { prisma } from "../../utils/prisma";
 import { handleDatabaseOperation } from "../../utils/handleDatabaseOperation";
+import { sendNotification } from "../../services/notificationService";
 
 // ---------------------------
 // SEND MESSAGE FUNCTION
@@ -65,6 +66,43 @@ export const sendMessage = handleDatabaseOperation(
           discussionId: discussionId,
         },
       });
+
+      await prisma.discussion.update({
+        where: { id: discussionId },
+        data: { seenBy: [userId] },
+      });
+
+      // Get the name of the user who sent the message
+      const sendingUser = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { name: true },
+      });
+
+      if (!sendingUser || !sendingUser.name) {
+        return res
+          .status(404)
+          .json({ error: "Sending user not found or has no name." });
+      }
+
+      const sendingUserName = sendingUser.name;
+      const baseURL =
+        process.env.NODE_ENV === "production"
+          ? "https://pwa.nicolas-schneider.fr"
+          : "http://localhost:3000";
+
+      const targetURL = `${baseURL}/discussion/${discussionId}`;
+
+      // Send notifications to users
+      const userIDsToNotify = discussion.users
+        .filter((user) => user.id !== userId)
+        .map((user) => user.id);
+
+      await sendNotification(
+        userIDsToNotify,
+        `New message from ${sendingUserName}`,
+        content,
+        targetURL
+      );
 
       res.status(201).json({ message: "Message successfully sent!" });
     } catch (error) {

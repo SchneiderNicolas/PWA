@@ -3,6 +3,8 @@ import prod from './config.prod';
 
 interface ConfigType {
   API_BASE_URL: string;
+  BASE_URL: string;
+  PUBLIC_VAPID_KEY: string;
 }
 
 let config: ConfigType;

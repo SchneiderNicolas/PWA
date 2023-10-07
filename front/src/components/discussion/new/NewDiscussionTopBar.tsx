@@ -41,10 +41,10 @@ const NewDiscussionTopBar = ({
   };
 
   return (
-    <div className={'z-40 sticky top-0 bg-white border-b border-gray-200'}>
+    <div className={'z-30 sticky top-0 bg-white border-b border-gray-200'}>
       {isMobile && (
         <button
-          onClick={handleBackClick} // use handleBackClick function
+          onClick={handleBackClick}
           className="absolute top-0 left-0 cursor-pointer flex items-center p-2 text-base font-semibold text-violet-500 rounded-br-md hover:bg-violet-100"
           aria-label="Go back"
         >
