@@ -30,14 +30,12 @@ const Notifications = () => {
     } else if (Notification.permission === 'denied') {
       setIsBlocked(true);
     } else {
-      console.log('test');
       unsubscribeFromNotifications();
     }
   }, [unsubscribeFromNotifications]);
 
   const subscribeToNotifications = async () => {
     try {
-      console.log('test');
       const registration = await navigator.serviceWorker.ready;
       console.log(registration);
       const subscription = await registration.pushManager.subscribe({

@@ -17,7 +17,7 @@ export const unsubscribe = handleDatabaseOperation(
       return res.status(200).json({ success: true });
     } catch (error: any) {
       console.error(error);
-      if (error.code === "P2016") {
+      if (error.code === "P2016" || error.code === "P2025") {
         return res
           .status(404)
           .json({ error: "Subscription not found for the provided user ID" });

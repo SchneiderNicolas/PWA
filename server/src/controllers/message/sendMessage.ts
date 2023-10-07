@@ -67,6 +67,11 @@ export const sendMessage = handleDatabaseOperation(
         },
       });
 
+      await prisma.discussion.update({
+        where: { id: discussionId },
+        data: { seenBy: [userId] },
+      });
+
       // Get the name of the user who sent the message
       const sendingUser = await prisma.user.findUnique({
         where: { id: userId },

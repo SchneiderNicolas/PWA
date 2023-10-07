@@ -34,6 +34,7 @@ model Discussion {
   title        String
   users        User[]       @relation("UserToDiscussion")
   messages     Message[]
+  seenBy       Int[]        @default([])
 }
 
 model Message {

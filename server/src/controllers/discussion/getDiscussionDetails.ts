@@ -20,6 +20,10 @@ export const getDiscussionDetails = handleDatabaseOperation(
     try {
       const userId = req.userId;
 
+      if (userId === undefined || typeof userId !== "number") {
+        return res.status(401).json({ error: "User is not authenticated." });
+      }
+
       const discussionId = parseInt(req.params.discussionId, 10);
       if (!discussionId) {
         return res
@@ -66,6 +70,14 @@ export const getDiscussionDetails = handleDatabaseOperation(
         return res
           .status(403)
           .json({ error: "User is not authorized to access this discussion." });
+      }
+
+      if (!discussion.seenBy.includes(userId)) {
+        discussion.seenBy.push(userId);
+        await prisma.discussion.update({
+          where: { id: discussionId },
+          data: { seenBy: discussion.seenBy },
+        });
       }
 
       const discussionForResponse = {
