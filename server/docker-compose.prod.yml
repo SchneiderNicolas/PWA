@@ -32,6 +32,9 @@ services:
       - NODE_ENV=production
       - DB_HOST=${DB_HOST_PROD}
       - SECRET_KEY=${SECRET_KEY}
+      - VAPID_PUBLIC_KEY={VAPID_MAILTO}
+      - VAPID_PRIVATE_KEY={VAPID_PUBLIC_KEY}
+      - VAPID_MAILTO={VAPID_PRIVATE_KEY}
     depends_on:
       - postgres
 
