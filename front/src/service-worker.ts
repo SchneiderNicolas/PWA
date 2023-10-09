@@ -12,7 +12,8 @@ import { clientsClaim } from 'workbox-core';
 import { ExpirationPlugin } from 'workbox-expiration';
 import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
-import { StaleWhileRevalidate } from 'workbox-strategies';
+import { NetworkFirst, StaleWhileRevalidate } from 'workbox-strategies';
+import config from './config/config';
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -142,3 +143,29 @@ self.addEventListener('message', (event) => {
 self.addEventListener('install', function (event) {
   self.skipWaiting();
 });
+
+registerRoute(
+  new RegExp(`${config.API_BASE_URL}/discussions`),
+  new NetworkFirst({
+    cacheName: 'api-cache',
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 100,
+        maxAgeSeconds: 24 * 60 * 60, // 1 day
+      }),
+    ],
+  }),
+);
+
+registerRoute(
+  new RegExp(`${config.API_BASE_URL}/discussion/\\d+`),
+  new NetworkFirst({
+    cacheName: 'api-cache',
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 100,
+        maxAgeSeconds: 24 * 60 * 60, // 1 day
+      }),
+    ],
+  }),
+);
