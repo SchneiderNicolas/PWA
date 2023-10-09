@@ -6,6 +6,7 @@ import crypto from "crypto";
 import { handleDatabaseOperation } from "../../utils/handleDatabaseOperation";
 import { sendInvitationEmail } from "../../services/emailService";
 import { sendNotification } from "../../services/notificationService";
+import { io } from "../../server";
 
 // ---------------------------
 // CREATE DISCUSSION FUNCTION
@@ -152,7 +153,6 @@ export const createDiscussion = handleDatabaseOperation(
         console.error("User ID not found for the sender");
       }
 
-
       // Prepare notification content
       const notificationTitle = "New Discussion Created!";
       const notificationMessage = `A new discussion titled "${title}" has been created! Join the conversation now.`;
@@ -162,6 +162,13 @@ export const createDiscussion = handleDatabaseOperation(
           ? "https://pwa.nicolas-schneider.fr"
           : "http://localhost:3000";
       const targetURL = `${baseURL}/discussion/${newDiscussion.id}`;
+
+      userIds.forEach((userId) => {
+        io.to(userId.toString()).emit("new-discussion", {
+          discussionId: newDiscussion.id,
+          title: newDiscussion.title,
+        });
+      });
 
       // Send notification to selected users
       await sendNotification(
