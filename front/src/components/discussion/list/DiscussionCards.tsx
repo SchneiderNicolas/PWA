@@ -48,6 +48,23 @@ const DiscussionCards = () => {
     }
   }, [socket, cookies.userId, mutate]);
 
+  useEffect(() => {
+    if (socket && cookies.userId) {
+      socket.emit('join', cookies.userId.toString());
+
+      const handleNewDiscussion = () => {
+        mutate();
+      };
+
+      socket.on('new-discussion', handleNewDiscussion);
+
+      return () => {
+        socket.emit('leave', cookies.userId.toString());
+        socket.off('new-discussion', handleNewDiscussion);
+      };
+    }
+  }, [socket, cookies.userId, mutate]);
+
   const handleDiscussionClick = (id: number) => {
     if (localDiscussions) {
       const updatedDiscussions = localDiscussions.map((discussion) =>
