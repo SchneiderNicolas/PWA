@@ -11,35 +11,38 @@ import { DiscussionProvider } from './contexts/DiscussionContext';
 import { useResponsive } from './hooks/useResponsive';
 import Discussion from './components/discussion/Discussion';
 import NewDiscussion from './components/discussion/new/NewDiscussion';
+import { SocketProvider } from './contexts/SocketContext';
 
 const App = () => {
   const { isMobile } = useResponsive();
   return (
     <BrowserRouter>
-      <DiscussionProvider>
-        <div className="flex">
-          <ConditionalSidebar />
-          <div className="flex-grow">
-            <Routes>
-              <Route path="/signin" element={<SignIn />} />
-              <Route path="/signup" element={<SignUp />} />
-              <Route path="/register" element={<AcceptInvitationPage />} />
-              <Route path="/" element={<ProtectedRoute />}>
-                <Route index element={<Home />} />
-                <Route
-                  path="/discussion/:discussionId"
-                  element={isMobile ? <Discussion /> : <Home />}
-                />
-                <Route
-                  path="/new"
-                  element={isMobile ? <NewDiscussion /> : <Home />}
-                />
-              </Route>
-              <Route path="/*" element={<NotFound />} />
-            </Routes>
+      <SocketProvider>
+        <DiscussionProvider>
+          <div className="flex">
+            <ConditionalSidebar />
+            <div className="flex-grow">
+              <Routes>
+                <Route path="/signin" element={<SignIn />} />
+                <Route path="/signup" element={<SignUp />} />
+                <Route path="/register" element={<AcceptInvitationPage />} />
+                <Route path="/" element={<ProtectedRoute />}>
+                  <Route index element={<Home />} />
+                  <Route
+                    path="/discussion/:discussionId"
+                    element={isMobile ? <Discussion /> : <Home />}
+                  />
+                  <Route
+                    path="/new"
+                    element={isMobile ? <NewDiscussion /> : <Home />}
+                  />
+                </Route>
+                <Route path="/*" element={<NotFound />} />
+              </Routes>
+            </div>
           </div>
-        </div>
-      </DiscussionProvider>
+        </DiscussionProvider>
+      </SocketProvider>
     </BrowserRouter>
   );
 };
