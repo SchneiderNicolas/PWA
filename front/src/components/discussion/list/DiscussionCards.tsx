@@ -6,17 +6,23 @@ import fetcher from '../../../utils/fetcher';
 import { Discussion } from '../../../types/discussionTypes';
 import { useNavigate } from 'react-router-dom';
 import { useDiscussionContext } from '../../../contexts/DiscussionContext';
+import { useSocket } from '../../../contexts/SocketContext';
 
 const DiscussionCards = () => {
-  const [cookies] = useCookies(['accessToken']);
+  const [cookies] = useCookies(['accessToken', 'userId']);
   const navigate = useNavigate();
   const { showDiscussion, viewState } = useDiscussionContext();
   const { forceUpdate } = useDiscussionContext();
   const [localDiscussions, setLocalDiscussions] = useState<Discussion[] | null>(
     null,
   );
+  const socket = useSocket();
 
-  const { data: discussions, error } = useSWR<Discussion[]>(
+  const {
+    data: discussions,
+    error,
+    mutate,
+  } = useSWR<Discussion[]>(
     [`${config.API_BASE_URL}/discussions`, forceUpdate],
     ([url]) => fetcher(url, cookies.accessToken),
   );
@@ -24,6 +30,23 @@ const DiscussionCards = () => {
   useEffect(() => {
     setLocalDiscussions(discussions || null);
   }, [discussions]);
+
+  useEffect(() => {
+    if (socket && cookies.userId) {
+      socket.emit('join', cookies.userId.toString());
+
+      const handleNewMessageNotification = () => {
+        mutate();
+      };
+
+      socket.on('new-message-notification', handleNewMessageNotification);
+
+      return () => {
+        socket.emit('leave', cookies.userId.toString());
+        socket.off('new-message-notification', handleNewMessageNotification);
+      };
+    }
+  }, [socket, cookies.userId, mutate]);
 
   const handleDiscussionClick = (id: number) => {
     if (localDiscussions) {
@@ -51,12 +74,14 @@ const DiscussionCards = () => {
           }`}
           onClick={() => handleDiscussionClick(discussion.id)}
         >
-          {discussion.isNew && (
+          {discussion.isNew && discussion.id !== viewState.discussionId && (
             <span className="block absolute top-0 right-0 w-3 h-3 mt-2 mr-2 bg-violet-500 rounded-full" />
           )}
           <h2
             className={`text-stone-800 ${
-              discussion.isNew ? 'font-bold' : 'font-medium'
+              discussion.isNew && discussion.id !== viewState.discussionId
+                ? 'font-bold'
+                : 'font-medium'
             }`}
           >
             {discussion.title}
@@ -64,7 +89,7 @@ const DiscussionCards = () => {
           <div className="flex justify-between items-center mt-1 text-sm">
             <p
               className={`truncate flex-grow ${
-                discussion.isNew
+                discussion.isNew && discussion.id !== viewState.discussionId
                   ? 'font-semibold text-stone-800'
                   : 'text-zinc-500'
               }`}
