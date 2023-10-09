@@ -8,6 +8,7 @@ import { Discussion as DiscussionType } from '../../types/discussionTypes';
 import MessageBubble from './MessageBubble';
 import DiscussionTopBar from './DiscussionTopBar';
 import { useDiscussionContext } from '../../contexts/DiscussionContext';
+import { useSocket } from '../../contexts/SocketContext';
 
 const Discussion = () => {
   const [messageInput, setMessageInput] = useState('');
@@ -35,6 +36,23 @@ const Discussion = () => {
       fetcher(url, cookies.accessToken) as Promise<DiscussionType>,
   );
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
+  const socket = useSocket();
+
+  useEffect(() => {
+    if (socket && discussionId) {
+      socket.emit('join', discussionId);
+
+      const handleNewMessage = () => {
+        mutate();
+      };
+
+      socket.on('new-message', handleNewMessage);
+      return () => {
+        socket.emit('leave', discussionId);
+        socket.off('new-message', handleNewMessage);
+      };
+    }
+  }, [socket, discussionId, mutate]);
 
   useEffect(() => {
     if (messagesEndRef.current) {

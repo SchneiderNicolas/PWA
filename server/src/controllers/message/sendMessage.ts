@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { prisma } from "../../utils/prisma";
 import { handleDatabaseOperation } from "../../utils/handleDatabaseOperation";
 import { sendNotification } from "../../services/notificationService";
+import { io } from "../../server";
 
 // ---------------------------
 // SEND MESSAGE FUNCTION
@@ -96,6 +97,20 @@ export const sendMessage = handleDatabaseOperation(
       const userIDsToNotify = discussion.users
         .filter((user) => user.id !== userId)
         .map((user) => user.id);
+
+      io.to(discussionId.toString()).emit("new-message", {
+        discussionId,
+        message: newMessage,
+        sender: sendingUserName,
+      });
+
+      userIDsToNotify.forEach((userId) => {
+        io.to(userId.toString()).emit("new-message-notification", {
+          discussionId,
+          message: newMessage,
+          sender: sendingUserName,
+        });
+      });
 
       await sendNotification(
         userIDsToNotify,
