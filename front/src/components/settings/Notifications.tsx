@@ -23,7 +23,10 @@ const Notifications = () => {
   }, [cookies.accessToken]);
 
   useEffect(() => {
-    if (Notification.permission === 'granted') {
+    if (!('Notification' in window)) {
+      console.log('This browser does not support desktop notification');
+      setIsBlocked(true);
+    } else if (Notification.permission === 'granted') {
       setNotificationsEnabled(true);
       setIsBlocked(false);
     } else if (Notification.permission === 'denied') {
