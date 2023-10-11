@@ -23,7 +23,6 @@ const Notifications = () => {
   }, [cookies.accessToken]);
 
   useEffect(() => {
-    console.log(Notification.permission);
     if (Notification.permission === 'granted') {
       setNotificationsEnabled(true);
       setIsBlocked(false);
