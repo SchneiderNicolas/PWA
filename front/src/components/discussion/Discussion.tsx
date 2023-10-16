@@ -104,6 +104,7 @@ const Discussion = () => {
       setOfflineMessages([]);
       mutate();
       toggleForceUpdate();
+      window.location.reload();
     };
 
     window.addEventListener('online', handleOnline);
