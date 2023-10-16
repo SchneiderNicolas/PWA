@@ -232,7 +232,9 @@ self.addEventListener('fetch', (event: FetchEvent) => {
 async function storeMessage(request: Request) {
   const db = await openDB('myDB', 1, {
     upgrade(db) {
-      db.createObjectStore('outbox', { autoIncrement: true, keyPath: 'id' });
+      if (!db.objectStoreNames.contains('outbox')) {
+        db.createObjectStore('outbox', { autoIncrement: true, keyPath: 'id' });
+      }
     },
   });
 
