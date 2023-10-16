@@ -18,3 +18,10 @@ export type Discussion = {
   messages: Message[];
   isNew: boolean;
 };
+
+export type OfflineMessage = {
+  content: string;
+  status: string;
+  timestamp: Date;
+  discussionId: number;
+};

@@ -4,11 +4,15 @@ import useSWR from 'swr';
 import config from '../../config/config';
 import fetcher from '../../utils/fetcher';
 import { useCookies } from 'react-cookie';
-import { Discussion as DiscussionType } from '../../types/discussionTypes';
+import {
+  Discussion as DiscussionType,
+  OfflineMessage,
+} from '../../types/discussionTypes';
 import MessageBubble from './MessageBubble';
 import DiscussionTopBar from './DiscussionTopBar';
 import { useDiscussionContext } from '../../contexts/DiscussionContext';
 import { useSocket } from '../../contexts/SocketContext';
+import { openDB } from 'idb';
 
 const Discussion = () => {
   const [messageInput, setMessageInput] = useState('');
@@ -20,6 +24,7 @@ const Discussion = () => {
   }>();
   const { viewState, toggleForceUpdate } = useDiscussionContext();
   const discussionId = routeDiscussionId || viewState.discussionId;
+  const [offlineMessages, setOfflineMessages] = useState<OfflineMessage[]>([]);
 
   useEffect(() => {
     if (!routeDiscussionId && discussionId) {
@@ -58,7 +63,7 @@ const Discussion = () => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView();
     }
-  }, [discussion]);
+  }, [discussion, offlineMessages]);
 
   const topBarRef = useRef<HTMLDivElement | null>(null);
 
@@ -67,6 +72,46 @@ const Discussion = () => {
       setTopBarHeight(topBarRef.current.offsetHeight);
     }
   }, [discussion]);
+
+  useEffect(() => {
+    async function getOfflineMessages() {
+      const messages = await fetchOfflineMessagesForDiscussion(discussionId);
+      setOfflineMessages(messages);
+    }
+    getOfflineMessages();
+  }, [discussionId]);
+
+  async function fetchOfflineMessagesForDiscussion(
+    discussionId: string | number | null,
+  ) {
+    const db = await openDB('myDB', 1);
+    const allOfflineMessages = await db.getAll('outbox');
+    const numericDiscussionId = Number(discussionId);
+    const filteredMessages = allOfflineMessages.filter(
+      (message) => message.body.discussionId === numericDiscussionId,
+    );
+
+    return filteredMessages.map((msg) => ({
+      content: msg.body.content,
+      status: 'Pending',
+      timestamp: new Date(),
+      discussionId: msg.body.discussionId,
+    }));
+  }
+
+  useEffect(() => {
+    const handleOnline = () => {
+      setOfflineMessages([]);
+      mutate();
+      toggleForceUpdate();
+    };
+
+    window.addEventListener('online', handleOnline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+    };
+  }, [mutate, offlineMessages, toggleForceUpdate]);
 
   const handleSendMessage = async () => {
     if (messageInput.trim() === '' || !discussionId) return;
@@ -99,7 +144,20 @@ const Discussion = () => {
       }),
     });
 
-    if (response.ok) {
+    if (response.status === 202) {
+      setOfflineMessages((prevOfflineMessages) => [
+        ...prevOfflineMessages,
+        {
+          content: messageInput,
+          status: 'Pending',
+          timestamp: new Date(),
+          discussionId: numericDiscussionId,
+        },
+      ]);
+      setMessageInput('');
+      mutate();
+      toggleForceUpdate();
+    } else if (response.ok) {
       setMessageInput('');
       mutate();
       toggleForceUpdate();
@@ -125,6 +183,13 @@ const Discussion = () => {
             key={index}
             message={message}
             isUser={message.user.id === cookies.userId}
+          />
+        ))}
+        {offlineMessages.map((offlineMessage, index) => (
+          <MessageBubble
+            key={`offline-${index}`}
+            offlineMessage={offlineMessage}
+            isUser={true}
           />
         ))}
         <div ref={messagesEndRef} />

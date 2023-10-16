@@ -13,6 +13,7 @@ import { ExpirationPlugin } from 'workbox-expiration';
 import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
 import { NetworkFirst, StaleWhileRevalidate } from 'workbox-strategies';
+import { openDB } from 'idb';
 import config from './config/config';
 
 declare const self: ServiceWorkerGlobalScope;
@@ -101,7 +102,43 @@ self.addEventListener('push', function (event) {
     data: data.data || {},
   };
 
-  event.waitUntil(self.registration.showNotification(data.title, options));
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window' }).then((windowClients) => {
+      console.log(windowClients);
+
+      let shouldShowNotification = true;
+
+      for (let i = 0; i < windowClients.length; i++) {
+        const client = windowClients[i];
+        const clientBaseUrl = new URL(client.url).origin;
+
+        if (
+          clientBaseUrl === new URL(config.BASE_URL).origin &&
+          client.visibilityState === 'visible'
+        ) {
+          shouldShowNotification = false;
+
+          windowClients.forEach((client) => {
+            if (client.focused) {
+              client.postMessage({
+                type: 'SHOW_NOTIFICATION',
+                payload: {
+                  notificationOptions: options,
+                  notificationTitle: data.title,
+                },
+              });
+            }
+          });
+
+          break;
+        }
+      }
+
+      if (shouldShowNotification) {
+        return self.registration.showNotification(data.title, options);
+      }
+    }),
+  );
 });
 
 self.addEventListener('notificationclick', function (event) {
@@ -116,7 +153,10 @@ self.addEventListener('notificationclick', function (event) {
         const clientBaseUrl = new URL(client.url).origin;
         const notificationBaseUrl = new URL(urlToNavigate).origin;
 
-        if (client.url === urlToNavigate && 'focus' in client) {
+        if (
+          client.url === urlToNavigate &&
+          client.visibilityState === 'visible'
+        ) {
           return client.focus();
         } else if (clientBaseUrl === notificationBaseUrl) {
           return client.navigate(urlToNavigate).then((navigatedClient) => {
@@ -169,3 +209,90 @@ registerRoute(
     ],
   }),
 );
+
+self.addEventListener('fetch', (event: FetchEvent) => {
+  if (
+    event.request.method === 'POST' &&
+    event.request.url.includes('/messages/send')
+  ) {
+    event.respondWith(
+      fetch(event.request.clone()).catch((error) => {
+        return storeMessage(event.request).then(() => {
+          // Register a sync event to resend the message when back online
+          self.registration.sync.register('retryMessages');
+          return new Response(JSON.stringify({ message: 'Stored for retry' }), {
+            status: 202,
+          });
+        });
+      }),
+    );
+  }
+});
+
+async function storeMessage(request: Request) {
+  const db = await openDB('myDB', 1, {
+    upgrade(db) {
+      db.createObjectStore('outbox', { autoIncrement: true, keyPath: 'id' });
+    },
+  });
+
+  // Define headers with an index signature
+  const headers: { [key: string]: string } = {};
+  request.headers.forEach((value, name) => {
+    headers[name] = value;
+  });
+
+  const body = await request.clone().json();
+
+  await db.add('outbox', { headers, body });
+}
+
+interface SyncManager {
+  getTags(): Promise<string[]>;
+  register(tag: string): Promise<void>;
+}
+
+declare global {
+  interface ServiceWorkerRegistration {
+    readonly sync: SyncManager;
+  }
+
+  interface SyncEvent extends ExtendableEvent {
+    readonly lastChance: boolean;
+    readonly tag: string;
+  }
+
+  interface ServiceWorkerGlobalScopeEventMap {
+    sync: SyncEvent;
+  }
+}
+
+self.addEventListener('sync', (event: SyncEvent) => {
+  if (event.tag === 'retryMessages') {
+    event.waitUntil(retryMessages());
+  }
+});
+
+async function retryMessages() {
+  const db = await openDB('myDB', 1);
+  const messages = await db.getAll('outbox');
+
+  for (const message of messages) {
+    try {
+      // Using stored headers and body
+      const response = await fetch(`${config.API_BASE_URL}/messages/send`, {
+        method: 'POST',
+        headers: message.headers,
+        body: JSON.stringify(message.body),
+      });
+
+      if (response.ok) {
+        await db.delete('outbox', message.id);
+      } else {
+        console.error('Failed to send message:', message.id, response.status);
+      }
+    } catch (error) {
+      console.error('Failed to send message:', message.id, error);
+    }
+  }
+}
