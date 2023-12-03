@@ -47,7 +47,7 @@ const SignIn = () => {
     <div className="flex flex-col justify-center items-center h-screen">
       <div className="px-12 py-12 shadow bg-white rounded-md flex flex-col gap-6">
         <h1 className="text-2xl font-bold text-gray-600 text-center mb-4">
-          Sign in to your accounttt
+          Sign in to your account
         </h1>
         <Input
           placeholder="Email"
